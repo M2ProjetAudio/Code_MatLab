@@ -176,7 +176,7 @@ disp('Localisation estimee:\n')
 hrir = simulator.DirectionalIR(xml.dbGetFile...
     ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
 
-for exp=1:length(D)
+for numero_exp=1:length(D)
     % SI k=0
     %AFFICHAGE DE LA SITUATION INITIALE
     ...
@@ -186,12 +186,12 @@ for exp=1:length(D)
         %MAJ POSITION
     ...
         %PREPARATION DE LA NOUVELLE MESURE -> SPATIALISATION DU SIGNAL
-    % D(exp) -> distance source - capteur
+    % D(numero_exp) -> distance source - capteur
     %
-    %     if D(exp) >= 3
+    %     if D(numero_exp) >= 3
     %         hrir = simulator.DirectionalIR(xml.dbGetFile...
     %             ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
-    %     elseif (D(exp) <3 && D(exp)>=2)
+    %     elseif (D(numero_exp) <3 && D(numero_exp)>=2)
     %         hrir = simulator.DirectionalIR(xml.dbGetFile...
     %             ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_2m.sofa'));
     %     else
@@ -200,11 +200,11 @@ for exp=1:length(D)
     %     end
     %
     
-    impulseResponse = hrir.getImpulseResponses(azimuth(exp));
+    impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
     
-    %fprintf('%d:%d\n',(exp-1)*Taille_groupe+1,exp*Taille_groupe)
-    signal_tr=signal((exp-1)*Taille_groupe+1:exp*Taille_groupe);
-    outputSignal((exp-1)*Taille_groupe+1:exp*Taille_groupe,:) = [conv(signal_tr,impulseResponse.left,'same') ...
+    %fprintf('%d:%d\n',(numero_exp-1)*Taille_groupe+1,numero_exp*Taille_groupe)
+    signal_tr=signal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe);
+    outputSignal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe,:) = [conv(signal_tr,impulseResponse.left,'same') ...
         conv(signal_tr,impulseResponse.right,'same')];
 end
 %%
@@ -224,10 +224,10 @@ w=hanning(1024);
 coef=sqrt(N/duree_son);
 %%
 
-for exp=1:length(D)-2
-    deb=Taille_groupe*(exp-1)+15+Taille_groupe/2; %debut a peu pres au milieu dun sig localise
+for numero_exp=1:length(D)-2
+    deb=Taille_groupe*(numero_exp-1)+15+Taille_groupe/2; %debut a peu pres au milieu dun sig localise
     % segments extremites
-    fprintf('deb: %d\n',deb)
+    %fprintf('deb: %d\n',deb)
     %fprintf('%d:%d\n',deb+1,deb+1024);
     x1t{1}(:,1)=x1(deb+1:deb+1024).*w;
     x2t{1}(:,1)=x2(deb+1:deb+1024).*w;
@@ -278,7 +278,7 @@ for exp=1:length(D)-2
                         trace(  (I2-P(:,:,k,ntheta))*C{k}));
                     
                 end
-                J(exp,ntheta)=c1-5*real(sum);
+                J(numero_exp,ntheta)=c1-5*real(sum);
             end
         case 2
             for ntheta=1:Ntheta
@@ -293,7 +293,7 @@ for exp=1:length(D)-2
                         +(I2-P(:,:,k,ntheta))*real(sum1)/B));
                     
                 end
-                J(exp,ntheta)=c2-5*real(sum);
+                J(numero_exp,ntheta)=c2-5*real(sum);
             end
         case 3
             for ntheta=1:Ntheta
@@ -304,7 +304,7 @@ for exp=1:length(D)-2
                         +(I2-P(:,:,k,ntheta))*trace(  (I2-P(:,:,k,ntheta))*C{k})));
                     
                 end
-                J(exp,ntheta)=c3-5*real(sum);
+                J(numero_exp,ntheta)=c3-5*real(sum);
             end
         case 4
             for ntheta=1:Ntheta
@@ -316,7 +316,7 @@ for exp=1:length(D)-2
                 for k=1:B
                     sum1=sum1+trace(  (I2-P(:,:,k,ntheta))*C{k})/sigma^2;
                 end
-                J(exp,ntheta)=c4-2*5*sum0-5*real(sum1);
+                J(numero_exp,ntheta)=c4-2*5*sum0-5*real(sum1);
             end
         case 5
             for ntheta=1:Ntheta
@@ -324,7 +324,7 @@ for exp=1:length(D)-2
                 for k=1:B
                     sum1=sum1+trace(  (I2-P(:,:,k,ntheta))*C{k});
                 end
-                J(exp,ntheta)=c5-2*5*log(real(sum1)/(2*B));
+                J(numero_exp,ntheta)=c5-2*5*log(real(sum1)/(2*B));
             end
         case 6
             for ntheta=1:Ntheta
@@ -332,18 +332,15 @@ for exp=1:length(D)-2
                 for k=1:B
                     sum=sum+log(.5*trace(  (I2-P(:,:,k,ntheta))*C{k}));
                 end
-                J(exp,ntheta)=c6-2*5*real(sum);
+                J(numero_exp,ntheta)=c6-2*5*real(sum);
             end
             
     end
     
     %on prend le max
-    [maxcrit_exp(exp),idxmax]=max(J(exp,:));
-    theta_mle(exp)=thetaArg(idxmax);
-    fprintf('Theta mle :')
-    disp(thetaArg(idxmax)*180/pi)
-     fprintf('Vraie localisation:  %d\n',round(azimuth(exp)));
-    
+    [maxcrit_exp(numero_exp),idxmax]=max(J(numero_exp,:));
+    theta_mle(numero_exp)=thetaArg(idxmax);
+    fprintf('Theta mle :   %.0f  Vraie localisation:   %d\n',thetaArg(idxmax)*180/pi,round(azimuth(numero_exp)));
 end
 % FIN BOUCLE
 mincrit=min(min(J));
@@ -359,9 +356,9 @@ end
 % Les maxcrit_exp de valeur Inf venaient du fait, qu'au debut du signal
 % sonore, plusieurs trames valaient 0.. (aucun son du tout)
 mincrit_exp=zeros(Nb_Loca,1);
-for exp=1:Nb_Loca
-    [maxcrit_exp(exp),idxmax]=max(Jpos(exp,:));
-    mincrit_exp(exp)=min(Jpos(exp,:));
-    Jpos(exp,:)=Jpos(exp,:)-mincrit_exp(exp);
-    maxcrit_exp(exp)=maxcrit_exp(exp)-mincrit_exp(exp);
+for numero_exp=1:Nb_Loca
+    [maxcrit_exp(numero_exp),idxmax]=max(Jpos(numero_exp,:));
+    mincrit_exp(numero_exp)=min(Jpos(numero_exp,:));
+    Jpos(numero_exp,:)=Jpos(numero_exp,:)-mincrit_exp(numero_exp);
+    maxcrit_exp(numero_exp)=maxcrit_exp(numero_exp)-mincrit_exp(numero_exp);
 end
