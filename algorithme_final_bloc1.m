@@ -143,7 +143,7 @@ Taille_groupe=floor(length(signal)/length(D));
 N=4; %5 hann par localisation
 %Taille_groupe=20000;
 % N=floor(Taille_groupe/K); %rect
-B=Nbfreq;
+%B=Nbfreq;
 B=128;
 %Allocations de memoire
 J1(Ntheta,1)=0;
@@ -216,7 +216,15 @@ if Psig<1
 else
     sigma=sqrt(Psig/10);
 end
-outputSignal=outputSignal+sigma*randn(size(outputSignal));
+
+bruit1=randn(size(outputSignal,1),1);
+bruit2=randn(size(outputSignal,1),1);
+
+[b,a]=butter(3,5000/(fs/2),'low');
+bruit1=filter(b,a,bruit1);
+bruit2=filter(b,a,bruit2);
+
+outputSignal=outputSignal+sigma*[bruit1,bruit2];
 %re-scale du outputSignal entre -1 et 1
 outputSignal=rechelonner(outputSignal);
 
