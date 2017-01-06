@@ -13,7 +13,7 @@
 % ATTENTION: avoir le fichier circle.m dans le mm repertoire pour le dessin
 
 
-%   test spatialisation d'un signal qui fait un 360 autour de l'auditeur.
+%   test spatialisation d'un signal qui fait un 360 autour de l'auditeur
 % un signal sonore de 25 sec
 % s'ecoute en stereo.
 % je voulais:
