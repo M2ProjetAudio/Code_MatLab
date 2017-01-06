@@ -1,6 +1,9 @@
 
 %       joue le son sur stereo
-soundsc(outputSignal,fs);
+
+p=audioplayer(outputSignal,fs);
+play(p);
+
 %         AFFICHAGE
 
 

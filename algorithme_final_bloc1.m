@@ -78,7 +78,7 @@ Nangles = length(az);
 
 
 %taille de chaque groupe (nb de points )
-taille_min_grp=4096; %=> correspond � 5trames de 1024 ech
+taille_min_grp=4096; %=> correspond 5trames de 1024 ech
 %Taille_groupe=4096+2*768;
 
 
@@ -217,6 +217,9 @@ else
     sigma=sqrt(Psig/10);
 end
 outputSignal=outputSignal+sigma*randn(size(outputSignal));
+%re-scale du outputSignal entre -1 et 1
+outputSignal=rechelonner(outputSignal);
+
 x1=outputSignal(:,1);
 x2=outputSignal(:,2);
 % decoupage en N intervalles de taille 1024
