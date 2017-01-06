@@ -13,7 +13,7 @@
 % ATTENTION: avoir le fichier circle.m dans le mm repertoire pour le dessin
 
 
-%   test spatialisation d'un signal qui fait un 360 autour de l'auditeur
+%   test spatialisation d'un signal qui fait un 360 autour de l'auditeur..
 % un signal sonore de 25 sec
 % s'ecoute en stereo.
 % je voulais:
@@ -77,7 +77,7 @@ Nangles = length(az);
 
 
 %taille de chaque groupe (nb de points )
-taille_min_grp=4096; %=> correspond à 5trames de 1024 ech
+taille_min_grp=4096; %=> correspond ï¿½ 5trames de 1024 ech
 %Taille_groupe=4096+2*768;
 
 
@@ -258,7 +258,7 @@ for numero_exp=1:length(D)-2
         C{k}=C{k}/4;
     end
     
-    %Calcul des critères
+    %Calcul des critï¿½res
     I2=[1 0;0 1];
     c0=-2*5*B*log(pi);
     c1=c0-5*B;
@@ -352,7 +352,7 @@ else
     maxcrit=max(maxcrit_exp(maxcrit_exp~=Inf));
 end
 
-% pour eliminer les Inf (ça bousille le truc sinon)
+% pour eliminer les Inf (ï¿½a bousille le truc sinon)
 % Les maxcrit_exp de valeur Inf venaient du fait, qu'au debut du signal
 % sonore, plusieurs trames valaient 0.. (aucun son du tout)
 mincrit_exp=zeros(Nb_Loca,1);
