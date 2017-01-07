@@ -1,6 +1,6 @@
-function src = synchroCallback(src, eventdata)
+function src = synchroPremier(src, eventdata)
     myStruct = get(src, 'UserData'); %//Unwrap
-    num_exp=myStruct.num_exp;
+    num_exp=1;
     
     myStruct.carre_source.XData=myStruct.xsource(num_exp);
     myStruct.carre_source.YData=myStruct.ysource(num_exp);

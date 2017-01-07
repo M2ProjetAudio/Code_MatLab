@@ -135,7 +135,7 @@ end
 
 % BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
 %Nb_Loca=floor(length(signal)/Taille_groupe);
-Nb_Loca=72;
+Nb_Loca=floor(duree_son*25);
 % azimuth a indiquer en degres
 azimuth=linspace(0,360,Nb_Loca);
 D=5*ones(size(azimuth));
