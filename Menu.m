@@ -131,6 +131,7 @@ function Afficher_button_Callback(hObject, eventdata, handles)
 % hObject    handle to Afficher_button (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+cla(handles.axes1);
 runAffichage(hObject, eventdata, handles);
 
 
