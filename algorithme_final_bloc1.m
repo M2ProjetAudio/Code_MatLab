@@ -56,6 +56,8 @@ if parole
 elseif gauss
     fs=44100;
     signal=randn(fs*8,1);
+    [b,a]=butter(3,5000/(fs/2),'low');
+    signal=filter(b,a,signal);
 end
 duree_son = length(signal) / fs;% => 25 sec
 
