@@ -135,7 +135,7 @@ end
 
 % BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
 %Nb_Loca=floor(length(signal)/Taille_groupe);
-Nb_Loca=floor(duree_son*25);
+Nb_Loca=5;%floor(duree_son*25);
 % azimuth a indiquer en degres
 azimuth=linspace(0,360,Nb_Loca);
 D=5*ones(size(azimuth));
@@ -180,29 +180,7 @@ hrir = simulator.DirectionalIR(xml.dbGetFile...
     ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
 
 for numero_exp=1:length(D)
-    % SI k=0
-    %AFFICHAGE DE LA SITUATION INITIALE
-    ...
-        %  SINON
-    %CALCUL DE LA COMMANDE -> u_k = u_0 pour la BO
-    ...
-        %MAJ POSITION
-    ...
-        %PREPARATION DE LA NOUVELLE MESURE -> SPATIALISATION DU SIGNAL
-    % D(numero_exp) -> distance source - capteur
-    %
-    %     if D(numero_exp) >= 3
-    %         hrir = simulator.DirectionalIR(xml.dbGetFile...
-    %             ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
-    %     elseif (D(numero_exp) <3 && D(numero_exp)>=2)
-    %         hrir = simulator.DirectionalIR(xml.dbGetFile...
-    %             ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_2m.sofa'));
-    %     else
-    %         hrir = simulator.DirectionalIR(xml.dbGetFile...
-    %             ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_1m.sofa'));
-    %     end
-    %
-    
+   
     impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
     
     %fprintf('%d:%d\n',(numero_exp-1)*Taille_groupe+1,numero_exp*Taille_groupe)
