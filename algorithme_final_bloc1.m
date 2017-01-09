@@ -49,7 +49,7 @@ if parole
     end
     clear signal;
     if size(signal_d,2)==2
-    signal=signal_d(debut:end,1)+signal_d(debut:end,2);
+        signal=signal_d(debut:end,1)+signal_d(debut:end,2);
     else signal=signal_d(debut:end,1);
     end
     
@@ -94,9 +94,9 @@ Nf=4;
 Fmax = 40000;
 Nfreqs = fix(Fmax*Lframe/fs) + 1;
 
-maxIndex=floor(K/2)+1;
-B=maxIndex;
-freqIndexes=1:maxIndex;
+%maxIndex=floor(K/2)+1;
+B=128;
+freqIndexes=round(linspace(1,512,B));
 Nbfreq=length(freqIndexes);
 % grille des azimuths testes
 thetaArg=az*pi/180;
@@ -126,7 +126,7 @@ P=NaN(2,2,Nbfreq,Ntheta);
 
 for k=1:B
     for ntheta=1:Ntheta
-        V=[1;H(k,ntheta)];
+        V=[1;H(freqIndexes(k),ntheta)];
         P(:,:,k,ntheta)=(V*V')/(V'*V); %donnee
         %P(:,:,k,ntheta)=V/(V'*V)*V';
     end
@@ -136,6 +136,11 @@ end
 % BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
 %Nb_Loca=floor(length(signal)/Taille_groupe);
 Nb_Loca=floor(duree_son*fps);
+while (length(signal)/Nb_Loca)< 5200   %2560*2 a peu pres
+    fps=fps-1;
+    Nb_Loca=duree_son*fps;
+end
+
 fprintf('Il y aura %d positionnements et autant de localisations\n',Nb_Loca);
 % azimuth a indiquer en degres
 azimuth=linspace(0,360,Nb_Loca);
@@ -159,8 +164,8 @@ end
 X1{N}=NaN;
 X2{N}=NaN;
 for i=1:4
-    X1{i}=zeros(128,1);
-    X2{i}=zeros(128,1);
+    X1{i}=zeros(1024,1);
+    X2{i}=zeros(1024,1);
 end
 C{B}=NaN;
 for k=1:B
@@ -179,11 +184,10 @@ disp('Localisation estimee:\n')
 
 hrir = simulator.DirectionalIR(xml.dbGetFile...
     ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
- 
+
 for numero_exp=1:length(D)
-   
-       impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
- 
+    
+    impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
     %fprintf('%d:%d\n',(numero_exp-1)*Taille_groupe+1,numero_exp*Taille_groupe)
     signal_tr=signal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe);
     % application de la hrir aux 2 oreilles
@@ -194,16 +198,15 @@ for numero_exp=1:length(D)
         numero_exp*Taille_groupe,:) = ...
         [left_ear(1:Taille_groupe) ...
         right_ear(1:Taille_groupe)];
-    
 end
 %%
 % Ajout de bruit sur le signal d'entree
-Psig=mean(mean(outputSignal.^2));
-if Psig<1
-    sigma=Psig/10;
-else
+Psig=mean(mean(outputSignal).^2);
+% if Psig<1
+%     sigma=Psig/10;
+% else
     sigma=sqrt(Psig/10);
-end
+% end
 
 bruit1=randn(size(outputSignal,1),1);
 bruit2=randn(size(outputSignal,1),1);
@@ -224,27 +227,31 @@ w=hanning(1024);
 coef=sqrt(N/duree_son);
 %%
 
-for numero_exp=1:length(D)-2
-    deb=Taille_groupe*(numero_exp-1)+15+Taille_groupe/2; %debut a peu pres au milieu dun sig localise
+for numero_exp=1:length(D)
+    deb=Taille_groupe*(numero_exp-1)+15+round(Taille_groupe/2); %debut a peu pres au milieu dun sig localise
     % segments extremites
     %fprintf('deb: %d\n',deb)
     %fprintf('%d:%d\n',deb+1,deb+1024);
     x1t{1}(:,1)=x1(deb+1:deb+1024).*w;
     x2t{1}(:,1)=x2(deb+1:deb+1024).*w;
-    X1{1}=coef*fft(x1t{1});  
-    X2{1}=coef*fft(x2t{1}); 
+%     X1{1}=coef*fft(x1t{1});
+%     X2{1}=coef*fft(x2t{1});
+    X1{1}=coef*fft(x1t{1});
+    X2{1}=coef*fft(x2t{1});
+    
     
     for i=2:4 % segments internes
         %fprintf('%d:%d\n',deb+1024*(i-1)*.75+1,deb+1024*(i-1)*.75+1024);
         x1t{i}(:,1)=x1(deb+512*(i-1)+1:deb+512*(i-1)+1024).*w;
         x2t{i}(:,1)=x2(deb+512*(i-1)+1:deb+512*(i-1)+1024).*w;
-        % fft
+        %         % fft
         X1{i}=coef*fft(x1t{i});
         X2{i}=coef*fft(x2t{i});
     end
     for k=1:B
         for i=1:4
-            Zint{k}(2*i-1:2*i,1)=[X1{i}(k);X2{i}(k)];
+            Zint{k}(2*i-1:2*i,1)=[X1{i}(freqIndexes(k));...
+                X2{i}(freqIndexes(k))];
         end
     end
     Z=cell2mat(Zint');
@@ -260,13 +267,22 @@ for numero_exp=1:length(D)-2
     
     %Calcul des crit�res
     I2=[1 0;0 1];
-    c0=-2*5*B*log(pi);
-    c1=c0-5*B;
-    c2=c1-5*B;
+    c0=-2*N*B*log(pi);
+    c1=c0-N*B;
+    c2=c1-N*B;
     c3=c2;
     c4=c0;
     c5=c2;
     c6=c2;
+    
+    c0=0;
+    c1=0;
+    c2=0;
+    c3=0;
+    c4=0;
+    c5=0;
+    c6=0;
+    
     switch(cas_de_figure)
         case 1
             for ntheta=1:Ntheta
@@ -278,7 +294,7 @@ for numero_exp=1:length(D)-2
                         trace(  (I2-P(:,:,k,ntheta))*C{k}));
                     
                 end
-                J(numero_exp,ntheta)=c1-5*real(sum);
+                J(numero_exp,ntheta)=c1-N*real(sum);
             end
         case 2
             for ntheta=1:Ntheta
@@ -293,7 +309,7 @@ for numero_exp=1:length(D)-2
                         +(I2-P(:,:,k,ntheta))*real(sum1)/B));
                     
                 end
-                J(numero_exp,ntheta)=c2-5*real(sum);
+                J(numero_exp,ntheta)=c2-N*real(sum);
             end
         case 3
             for ntheta=1:Ntheta
@@ -304,7 +320,7 @@ for numero_exp=1:length(D)-2
                         +(I2-P(:,:,k,ntheta))*trace(  (I2-P(:,:,k,ntheta))*C{k})));
                     
                 end
-                J(numero_exp,ntheta)=c3-5*real(sum);
+                J(numero_exp,ntheta)=c3-N*real(sum);
             end
         case 4
             for ntheta=1:Ntheta
@@ -316,7 +332,7 @@ for numero_exp=1:length(D)-2
                 for k=1:B
                     sum1=sum1+trace(  (I2-P(:,:,k,ntheta))*C{k})/sigma^2;
                 end
-                J(numero_exp,ntheta)=c4-2*5*sum0-5*real(sum1);
+                J(numero_exp,ntheta)=c4-2*N*sum0-N*real(sum1);
             end
         case 5
             for ntheta=1:Ntheta
@@ -324,7 +340,7 @@ for numero_exp=1:length(D)-2
                 for k=1:B
                     sum1=sum1+trace(  (I2-P(:,:,k,ntheta))*C{k});
                 end
-                J(numero_exp,ntheta)=c5-2*5*log(real(sum1)/(2*B));
+                J(numero_exp,ntheta)=c5-2*N*log(real(sum1)/(2*B));
             end
         case 6
             for ntheta=1:Ntheta
@@ -332,7 +348,7 @@ for numero_exp=1:length(D)-2
                 for k=1:B
                     sum=sum+log(.5*trace(  (I2-P(:,:,k,ntheta))*C{k}));
                 end
-                J(numero_exp,ntheta)=c6-2*5*real(sum);
+                J(numero_exp,ntheta)=c6-2*N*real(sum);
             end
             
     end
@@ -353,7 +369,7 @@ else
     maxcrit=max(maxcrit_exp(maxcrit_exp~=Inf));
 end
 
-% pour eliminer les Inf (�a bousille le truc sinon)
+% pour eliminer les Inf (a bousille le truc sinon)
 % Les maxcrit_exp de valeur Inf venaient du fait, qu'au debut du signal
 % sonore, plusieurs trames valaient 0.. (aucun son du tout)
 mincrit_exp=zeros(Nb_Loca,1);
@@ -363,3 +379,4 @@ for numero_exp=1:Nb_Loca
     Jpos(numero_exp,:)=Jpos(numero_exp,:)-mincrit_exp(numero_exp);
     maxcrit_exp(numero_exp)=maxcrit_exp(numero_exp)-mincrit_exp(numero_exp);
 end
+% Jpos=rescale_matrix01(J);
