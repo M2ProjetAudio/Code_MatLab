@@ -179,11 +179,11 @@ disp('Localisation estimee:\n')
 
 hrir = simulator.DirectionalIR(xml.dbGetFile...
     ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
-
+ 
 for numero_exp=1:length(D)
    
-    impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
-    
+       impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
+ 
     %fprintf('%d:%d\n',(numero_exp-1)*Taille_groupe+1,numero_exp*Taille_groupe)
     signal_tr=signal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe);
     % application de la hrir aux 2 oreilles

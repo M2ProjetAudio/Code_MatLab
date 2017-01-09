@@ -22,7 +22,7 @@ function varargout = Menu2(varargin)
 
 % Edit the above text to modify the response to help Menu2
 
-% Last Modified by GUIDE v2.5 09-Jan-2017 00:38:33
+% Last Modified by GUIDE v2.5 09-Jan-2017 10:39:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -204,4 +204,3 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 fps=10;
 assignin('base','fps',fps);
-
