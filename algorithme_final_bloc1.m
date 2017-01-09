@@ -135,7 +135,8 @@ end
 
 % BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
 %Nb_Loca=floor(length(signal)/Taille_groupe);
-Nb_Loca=5;%floor(duree_son*25);
+Nb_Loca=floor(duree_son*fps);
+fprintf('Il y aura %d positionnements et autant de localisations\n',Nb_Loca);
 % azimuth a indiquer en degres
 azimuth=linspace(0,360,Nb_Loca);
 D=5*ones(size(azimuth));
@@ -185,8 +186,15 @@ for numero_exp=1:length(D)
     
     %fprintf('%d:%d\n',(numero_exp-1)*Taille_groupe+1,numero_exp*Taille_groupe)
     signal_tr=signal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe);
-    outputSignal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe,:) = [conv(signal_tr,impulseResponse.left,'same') ...
-        conv(signal_tr,impulseResponse.right,'same')];
+    % application de la hrir aux 2 oreilles
+    left_ear=conv(signal_tr,impulseResponse.left);
+    right_ear=conv(signal_tr,impulseResponse.right);
+    
+    outputSignal((numero_exp-1)*Taille_groupe+1:...
+        numero_exp*Taille_groupe,:) = ...
+        [left_ear(1:Taille_groupe) ...
+        right_ear(1:Taille_groupe)];
+    
 end
 %%
 % Ajout de bruit sur le signal d'entree
@@ -335,6 +343,7 @@ for numero_exp=1:length(D)-2
     fprintf('Theta mle :   %.0f  Vraie localisation:   %d\n',thetaArg(idxmax)*180/pi,round(azimuth(numero_exp)));
 end
 % FIN BOUCLE
+
 mincrit=min(min(J));
 if mincrit<0
     Jpos=J+abs(mincrit)*ones(size(J));

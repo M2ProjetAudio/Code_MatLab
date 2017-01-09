@@ -1,6 +1,9 @@
 cla(handles.axes1);
 cla(handles.axes2);
 
+set(handles.axes1,'Visible','On');
+set(handles.axes2,'Visible','On');
+
 %% fig 2
 axes(handles.axes2);
 plot(sum(outputSignal,2));
@@ -61,39 +64,37 @@ axis([-D(1)-.5 D(1)+.5 -D(1)-.5 D(1)+.5])
 
 
 myStruct.num_exp=1;
+myStruct.nb_exp=nb_exp;
+
+% <video>
+myStruct.prendre_video=0;
+if myStruct.prendre_video
+   writerObj = VideoWriter('vid1','MPEG-4');
+   writerObj.FrameRate = evalin('base','fps');
+   myStruct.frame{myStruct.nb_exp}=getframe;
+    open(writerObj);
+end
+% </video>
+
 
 p=audioplayer(outputSignal,fs);
 set(p, 'UserData', myStruct);
 set(p, 'TimerFcn', @synchroCallback);
 set(p,'StartFcn',@synchroPremier);
 set(p, 'TimerPeriod',dt);
+
+
 playblocking(p)
 
-% %         AFFICHAGE
-% for num_exp=1:nb_exp
-%    
-%     carre_source.XData=xsource(num_exp);
-%     carre_source.YData=ysource(num_exp);
-%     texte_source.Position=[xtext(num_exp) ytext(num_exp) 0];
-%     fleche.UData=u(num_exp);
-%     fleche.VData=v(num_exp);
-%     criteres_J_fill.XData=xfill{num_exp};
-%     criteres_J_fill.YData=yfill{num_exp};
-%     
-%     if num_exp==1
-%         carre_source=line('Visible','on');
-%         %texte de la source
-%         texte_source=text(0,0,'source sonore','Visible','on');
-%         %bulles des valeurs des criteres
-%         criteres_J_fill=fill(0,0,[.8 .8 .8],'Visible','on');
-%         %fleche du mle
-%         fleche=quiver(0,0,1,1,'r','Visible','on');
-%     end
-%     
-%     pause(dt)
-% end
-% 
-% 
+myStruct=get(p, 'UserData');
+if myStruct.prendre_video
+    for k=1:nb_exp
+         writeVideo(writerObj,myStruct.frame{k});
+    end
+    
+    close(writerObj);
+end
+
 
 
 if parole

@@ -22,7 +22,7 @@ function varargout = Menu2(varargin)
 
 % Edit the above text to modify the response to help Menu2
 
-% Last Modified by GUIDE v2.5 07-Jan-2017 15:51:10
+% Last Modified by GUIDE v2.5 09-Jan-2017 00:38:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -165,6 +165,8 @@ hyp2=get(handles.hyp2,'Value')
 hyp3=get(handles.hyp3,'Value')
 cas_de_figure=1*(gauss*hyp1)+2*gauss*hyp2+3*gauss*hyp3+...
     4*parole*hyp1+5*parole*hyp2+6*parole*hyp3
+fps=evalin('base','fps');
+
 
 run algorithme_final_bloc1.m
 
@@ -176,3 +178,30 @@ function runAffichage(hObject, eventdata, handles)
 load result_data
 run afficher_bloc1.m
 clear resul_data
+
+
+
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+fps=str2double(get(hObject,'String'));
+assignin('base','fps',fps);
+
+% --- Executes during object creation, after setting all properties.
+function edit2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+fps=10;
+assignin('base','fps',fps);
+
