@@ -71,7 +71,10 @@ myStruct.prendre_video=0;
 if myStruct.prendre_video
    writerObj = VideoWriter('vid1','MPEG-4');
    writerObj.FrameRate = evalin('base','fps');
-   myStruct.frame{myStruct.nb_exp}=getframe;
+   myStruct.frame{myStruct.nb_exp}=getframe(Menu2);
+   for k=1:myStruct.nb_exp
+       myStruct.frame{k}=myStruct.frame{myStruct.nb_exp};
+   end
     open(writerObj);
 end
 % </video>
