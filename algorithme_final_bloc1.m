@@ -91,11 +91,7 @@ Nfreqs = fix(Fmax*Lframe/fs) + 1;
 
 %maxIndex=floor(K/2)+1;
 B=128;
-<<<<<<< HEAD
-freqIndexes=round(linspace(1,512,B));
-=======
 freqIndexes=round(linspace(1,round(Lframe) ,B));
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
 Nbfreq=length(freqIndexes);
 % grille des azimuths testes
 thetaArg=az*pi/180;
@@ -135,13 +131,6 @@ end
 % BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
 %Nb_Loca=floor(length(signal)/Taille_de_1_position);
 Nb_Loca=floor(duree_son*fps);
-<<<<<<< HEAD
-while (length(signal)/Nb_Loca)< 5200   %2560*2 a peu pres
-    fps=fps-1;
-    Nb_Loca=duree_son*fps;
-end
-
-=======
 while (length(signal)/Nb_Loca)< Lframe*2.5
     fps=fps-1;
     Nb_Loca=floor(duree_son*fps);
@@ -149,7 +138,6 @@ while (length(signal)/Nb_Loca)< Lframe*2.5
 end
 fprintf('!!!!!!!!!!! FPS  vaut  %d !!!!!!!!!!\n\n',fps);
 assignin('base','fps',fps);
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
 fprintf('Il y aura %d positionnements et autant de localisations\n',Nb_Loca);
 % azimuth a indiquer en degres
 azimuth=linspace(0,360,Nb_Loca);
@@ -172,13 +160,8 @@ end
 X1{N}=NaN;
 X2{N}=NaN;
 for i=1:4
-<<<<<<< HEAD
-    X1{i}=zeros(1024,1);
-    X2{i}=zeros(1024,1);
-=======
     X1{i}=zeros(Lframe,1);
     X2{i}=zeros(Lframe,1);
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
 end
 C{B}=NaN;
 for k=1:B
@@ -201,31 +184,12 @@ hrir = simulator.DirectionalIR(xml.dbGetFile...
 for numero_exp=1:length(D)
     
     impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
-<<<<<<< HEAD
-    %fprintf('%d:%d\n',(numero_exp-1)*Taille_groupe+1,numero_exp*Taille_groupe)
-    signal_tr=signal((numero_exp-1)*Taille_groupe+1:numero_exp*Taille_groupe);
-=======
     %fprintf('%d:%d\n',(numero_exp-1)*Taille_de_1_position+1,numero_exp*Taille_de_1_position)
     signal_tr=signal((numero_exp-1)*Taille_de_1_position+1:numero_exp*Taille_de_1_position);
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
     % application de la hrir aux 2 oreilles
     left_ear=conv(signal_tr,impulseResponse.left);
     right_ear=conv(signal_tr,impulseResponse.right);
     
-<<<<<<< HEAD
-    outputSignal((numero_exp-1)*Taille_groupe+1:...
-        numero_exp*Taille_groupe,:) = ...
-        [left_ear(1:Taille_groupe) ...
-        right_ear(1:Taille_groupe)];
-end
-%%
-% Ajout de bruit sur le signal d'entree
-Psig=mean(mean(outputSignal).^2);
-% if Psig<1
-%     sigma=Psig/10;
-% else
-    sigma=sqrt(Psig/10);
-=======
     outputSignal((numero_exp-1)*Taille_de_1_position+1:...
         numero_exp*Taille_de_1_position,:) = ...
         [left_ear(1:Taille_de_1_position) ...
@@ -238,7 +202,6 @@ Psig=mean(mean(outputSignal,2).^2);
 %     sigma=Psig/10;
 % else
     sigma=sqrt(Psig/10)/10
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
 % end
 
 bruit1=randn(size(outputSignal,1),1);
@@ -261,21 +224,12 @@ coef=sqrt(N/duree_son);
 %%
 
 for numero_exp=1:length(D)
-<<<<<<< HEAD
-    deb=Taille_groupe*(numero_exp-1)+15+round(Taille_groupe/2); %debut a peu pres au milieu dun sig localise
-    % segments extremites
-    %fprintf('deb: %d\n',deb)
-    %fprintf('%d:%d\n',deb+1,deb+1024);
-    x1t{1}(:,1)=x1(deb+1:deb+1024).*w;
-    x2t{1}(:,1)=x2(deb+1:deb+1024).*w;
-=======
     deb=Taille_de_1_position*(numero_exp-1)+round(Taille_de_1_position/2)-round(Lframe*2.5/2); %debut a peu pres au milieu dun sig localise
     % segments extremites
     %fprintf('deb: %d\n',deb)
     %fprintf('%d:%d\n',deb+1,deb+Lframe);
     x1t{1}(:,1)=x1(deb+1:deb+Lframe).*w;
     x2t{1}(:,1)=x2(deb+1:deb+Lframe).*w;
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
 %     X1{1}=coef*fft(x1t{1});
 %     X2{1}=coef*fft(x2t{1});
     X1{1}=coef*fft(x1t{1});
@@ -283,15 +237,9 @@ for numero_exp=1:length(D)
     
     
     for i=2:4 % segments internes
-<<<<<<< HEAD
-        %fprintf('%d:%d\n',deb+1024*(i-1)*.75+1,deb+1024*(i-1)*.75+1024);
-        x1t{i}(:,1)=x1(deb+512*(i-1)+1:deb+512*(i-1)+1024).*w;
-        x2t{i}(:,1)=x2(deb+512*(i-1)+1:deb+512*(i-1)+1024).*w;
-=======
         %fprintf('%d:%d\n',deb+Lframe*(i-1)*.75+1,deb+Lframe*(i-1)*.75+Lframe);
         x1t{i}(:,1)=x1(deb+floor(Lframe/2)*(i-1)+1:deb+floor(Lframe/2)*(i-1)+Lframe).*w;
         x2t{i}(:,1)=x2(deb+floor(Lframe/2)*(i-1)+1:deb+floor(Lframe/2)*(i-1)+Lframe).*w;
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
         %         % fft
         X1{i}=coef*fft(x1t{i});
         X2{i}=coef*fft(x2t{i});
@@ -380,12 +328,8 @@ for numero_exp=1:length(D)
                 for k=1:B
                     sum1=sum1+trace(  (I2-P(:,:,k,ntheta))*C{k})/sigma^2;
                 end
-<<<<<<< HEAD
-                J(numero_exp,ntheta)=c4-2*N*sum0-N*real(sum1);
-=======
 %                J(numero_exp,ntheta)=c4-2*N*sum0-N*real(sum1);
                 J(numero_exp,ntheta)=-N*real(sum1);
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
             end
         case 5
             for ntheta=1:Ntheta
@@ -413,28 +357,6 @@ for numero_exp=1:length(D)
 end
 % FIN BOUCLE
 
-mincrit=min(min(J));
-if mincrit<0
-    Jpos=J+abs(mincrit)*ones(size(J));
-    maxcrit=max(maxcrit_exp(maxcrit_exp~=Inf))+abs(mincrit);
-else
-    Jpos=J;
-    maxcrit=max(maxcrit_exp(maxcrit_exp~=Inf));
-end
-
-<<<<<<< HEAD
-% pour eliminer les Inf (a bousille le truc sinon)
-% Les maxcrit_exp de valeur Inf venaient du fait, qu'au debut du signal
-% sonore, plusieurs trames valaient 0.. (aucun son du tout)
-mincrit_exp=zeros(Nb_Loca,1);
-for numero_exp=1:Nb_Loca
-    [maxcrit_exp(numero_exp),idxmax]=max(Jpos(numero_exp,:));
-    mincrit_exp(numero_exp)=min(Jpos(numero_exp,:));
-    Jpos(numero_exp,:)=Jpos(numero_exp,:)-mincrit_exp(numero_exp);
-    maxcrit_exp(numero_exp)=maxcrit_exp(numero_exp)-mincrit_exp(numero_exp);
-end
-% Jpos=rescale_matrix01(J);
-=======
 
 %Jpos=rescale_matrix01(J);
 Jpos=arrangement(J,.15);
@@ -450,4 +372,3 @@ Jpos=arrangement(J,.15);
 
 
 
->>>>>>> f1a5c6c0753620723102be8df81e7eece77a32c1
