@@ -15,7 +15,7 @@ myStruct.barre_rouge.XData=[myStruct.xbarre_rouge(num_exp),myStruct.xbarre_rouge
 
 
 if myStruct.prendre_video  
-    myStruct.frame{num_exp}=getframe;
+    myStruct.frame{num_exp}=getframe(Menu2);
 end
 
 myStruct.num_exp=myStruct.num_exp+1;

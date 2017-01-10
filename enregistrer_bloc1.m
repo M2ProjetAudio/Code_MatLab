@@ -66,9 +66,10 @@ axis([-D(1)-.5 D(1)+.5 -D(1)-.5 D(1)+.5])
 myStruct.num_exp=1;
 myStruct.nb_exp=nb_exp;
 
-% <video>
 
-myStruct.prendre_video=0;
+
+
+myStruct.prendre_video=1;
 
 if myStruct.prendre_video
     writerObj = VideoWriter('vid1','Uncompressed AVI');
@@ -83,16 +84,33 @@ end
 % </video>
 
 
-p=audioplayer(outputSignal,fs);
-set(p, 'UserData', myStruct);
-set(p, 'TimerFcn', @synchroCallback);
-set(p,'StartFcn',@synchroPremier);
-set(p, 'TimerPeriod',dt);
+% boucle dessin
+for num_exp=1:nb_exp
 
 
-playblocking(p)
+myStruct.carre_source.XData=myStruct.xsource(num_exp);
+myStruct.carre_source.YData=myStruct.ysource(num_exp);
+myStruct.texte_source.Position=[myStruct.xtext(num_exp) myStruct.ytext(num_exp) 0];
+myStruct.fleche.UData=myStruct.u(num_exp);
+myStruct.fleche.VData=myStruct.v(num_exp);
+myStruct.criteres_J_fill.XData=myStruct.xfill{num_exp};
+myStruct.criteres_J_fill.YData=myStruct.yfill{num_exp};
+myStruct.barre_rouge.XData=[myStruct.xbarre_rouge(num_exp),myStruct.xbarre_rouge(num_exp)];
 
-myStruct=get(p, 'UserData');
+
+
+
+if myStruct.prendre_video
+    myStruct.frame{num_exp}=getframe(Menu2);
+end
+
+myStruct.num_exp=myStruct.num_exp+1;
+
+end
+%
+
+
+
 if myStruct.prendre_video
     for k=1:nb_exp
          writeVideo(writerObj,myStruct.frame{k});
@@ -108,7 +126,7 @@ if parole
 elseif gauss
     audiowrite('gauss360.wav',outputSignal,fs)
 end
-nom='video_avec_son.avi';
+nom='enregistrement_resultats_avec_son.avi';
 vidI= vision.VideoFileReader('vid1.avi');
 vidO = vision.VideoFileWriter('Filename',nom,'AudioInputPort',1,'FrameRate',evalin('base','fps'));
 val= size(outputSignal,1)/nb_exp ;
@@ -123,5 +141,3 @@ for k = 1 :myStruct.nb_exp
 end
 release(vidI)
 release(vidO)
-
-
