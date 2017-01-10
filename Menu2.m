@@ -22,7 +22,7 @@ function varargout = Menu2(varargin)
 
 % Edit the above text to modify the response to help Menu2
 
-% Last Modified by GUIDE v2.5 09-Jan-2017 10:39:09
+% Last Modified by GUIDE v2.5 10-Jan-2017 18:52:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -204,3 +204,14 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 fps=10;
 assignin('base','fps',fps);
+
+
+% --- Executes on button press in pushbutton_enregistrer.
+function pushbutton_enregistrer_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_enregistrer (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+load result_data
+run enregistrer_bloc1.m
+clear resul_data
+

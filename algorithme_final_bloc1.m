@@ -79,8 +79,7 @@ HRIR = permute(HRIR,[3 2 1]);
 Nangles = length(az);
 
 
-
-K=Lframe; % nombre de points par trame
+ % nombre de points par trame
 % Rq: il y aura taille_groupe/K trames dans chaque groupe de localisation
 % si la fenetre est rect
 % Plus de trames si fenetres de Hann (a cause du recouvrement)
@@ -132,11 +131,13 @@ end
 % BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
 %Nb_Loca=floor(length(signal)/Taille_de_1_position);
 Nb_Loca=floor(duree_son*fps);
-while (length(signal)/Nb_Loca)< Lframe*2.5   
+while (length(signal)/Nb_Loca)< Lframe*2.5
     fps=fps-1;
     Nb_Loca=floor(duree_son*fps);
+    fprintf('!!!!!!!!!!! DIMINUTION FPS !!!!!!!!!!\n\n');
 end
-
+fprintf('!!!!!!!!!!! FPS  vaut  %d !!!!!!!!!!\n\n',fps);
+assignin('base','fps',fps);
 fprintf('Il y aura %d positionnements et autant de localisations\n',Nb_Loca);
 % azimuth a indiquer en degres
 azimuth=linspace(0,360,Nb_Loca);
@@ -223,7 +224,7 @@ coef=sqrt(N/duree_son);
 %%
 
 for numero_exp=1:length(D)
-    deb=Taille_de_1_position*(numero_exp-1)+round(Taille_de_1_position/2)-round(Lframe/2); %debut a peu pres au milieu dun sig localise
+    deb=Taille_de_1_position*(numero_exp-1)+round(Taille_de_1_position/2)-round(Lframe*2.5/2); %debut a peu pres au milieu dun sig localise
     % segments extremites
     %fprintf('deb: %d\n',deb)
     %fprintf('%d:%d\n',deb+1,deb+Lframe);
@@ -365,14 +366,18 @@ else
     maxcrit=max(maxcrit_exp(maxcrit_exp~=Inf));
 end
 
-% pour eliminer les Inf (a bousille le truc sinon)
-% Les maxcrit_exp de valeur Inf venaient du fait, qu'au debut du signal
-% sonore, plusieurs trames valaient 0.. (aucun son du tout)
-mincrit_exp=zeros(Nb_Loca,1);
-for numero_exp=1:Nb_Loca
-    [maxcrit_exp(numero_exp),idxmax]=max(Jpos(numero_exp,:));
-    mincrit_exp(numero_exp)=min(Jpos(numero_exp,:));
-    Jpos(numero_exp,:)=Jpos(numero_exp,:)-mincrit_exp(numero_exp);
-    maxcrit_exp(numero_exp)=maxcrit_exp(numero_exp)-mincrit_exp(numero_exp);
-end
+
 %Jpos=rescale_matrix01(J);
+Jpos=arrangement(J,.15);
+
+
+
+
+
+
+
+
+
+
+
+
