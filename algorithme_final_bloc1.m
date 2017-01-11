@@ -70,7 +70,7 @@ hrtffile = xml.dbGetFile(...
     'impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa');
 hrir_SOFA= SOFAload(hrtffile);
 
-Lframe = 512; % taille d'une trame
+Lframe = 128; % taille d'une trame
 az=(-180:179);
 
 

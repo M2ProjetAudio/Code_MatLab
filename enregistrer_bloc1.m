@@ -126,7 +126,7 @@ if parole
 elseif gauss
     audiowrite('gauss360.wav',outputSignal,fs)
 end
-nom='enregistrement_resultats_avec_son.avi';
+nom='enregistrement_resultats_avec_son_128.avi';
 vidI= vision.VideoFileReader('vid1.avi');
 vidO = vision.VideoFileWriter('Filename',nom,'AudioInputPort',1,'FrameRate',evalin('base','fps'));
 val= size(outputSignal,1)/nb_exp ;
