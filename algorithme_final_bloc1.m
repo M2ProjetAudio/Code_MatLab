@@ -66,22 +66,22 @@ duree_son = length(signal) / fs;% => 25 sec
 
 
 
-sortie_space=spatialisation(gauss,signal,wav_name);
+sortie_space=spatialisation(gauss,signal,wav_name,cas_de_figure,duree_son);
 
-
-outputSignal=sortie_space.outputSignal;
-D=sortie_space.D;
-%Taille_groupe=sortie_space.Taille_groupe;
-B=sortie_space.B;
-Ntheta=sortie_space.Ntheta;
-P=sortie_space.P;
-sigma=sortie_space.sigma;
-thetaArg=sortie_space.thetaArg;
-azimuth=sortie_space.azimuth;
+thetaArg= sortie_space.thetaArg;
 
 
 
-sortie_loca=localisation(gauss,signal,wav_name,cas_de_figure);
+sortie_loca=localisation(gauss,signal,wav_name,cas_de_figure,duree_son);
+
+outputSignal=sortie_loca.outputSignal;
+Jpos=sortie_loca.Jpos;
+D=sortie_loca.D;
+azimuth=sortie_loca.azimuth;
+maxcrit_exp=sortie_loca.maxcrit_exp;
+theta_mle=sortie_loca.theta_mle;
+Nb_Loca=sortie_loca.Nb_Loca;
+
 
 
 

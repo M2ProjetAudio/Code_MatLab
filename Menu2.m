@@ -169,8 +169,7 @@ fps=evalin('base','fps');
 
 
 run algorithme_final_bloc1.m
-run spatialisation
-%run localisation
+
 
 save('result_data.mat','outputSignal','Jpos','D','azimuth','maxcrit_exp'...
     ,'thetaArg','theta_mle','duree_son','Nb_Loca','wav_name','fs',...

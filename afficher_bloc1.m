@@ -108,20 +108,4 @@ if parole
 elseif gauss
     audiowrite('gauss360.wav',outputSignal,fs)
 end
-nom='video_avec_son.avi';
-vidI= vision.VideoFileReader('vid1.avi');
-vidO = vision.VideoFileWriter('Filename',nom,'AudioInputPort',1,'FrameRate',evalin('base','fps'));
-val= size(outputSignal,1)/nb_exp ;
-
-for k = 1 :myStruct.nb_exp
-    % reading frames from a directory
-   % Frame=myStruct.frame{k};
-    Frame=step(vidI);
-    % adding the audio variable in the step function
-    step(vidO,Frame,outputSignal(val*(k-1)+1:val*k,:)); % it is 2 channel that is why I have put (:)
-
-end
-release(vidI)
-release(vidO)
-
 

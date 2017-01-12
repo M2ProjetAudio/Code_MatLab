@@ -1,21 +1,104 @@
-function sortie_loca=localisation(gauss,signal,wav_name,cas_de_figure)
+function sortie_loca=localisation(gauss,signal,wav_name,cas_de_figure,duree_son)
 
+fps=evalin('base','fps');
 fs=44100;
-sortie_space=spatialisation(gauss,signal,wav_name);
-duree_son = length(signal) / fs;
-outputSignal=sortie_space.outputSignal;
-N=sortie_space.N;
-D=sortie_space.D;
+
+sortie_space=spatialisation(gauss,signal,wav_name,cas_de_figure,duree_son);
 Lframe=sortie_space.Lframe;
-Taille_de_1_position=sortie_space.Taille_de_1_position;
-freqIndexes=sortie_space.freqIndexes;
-%Taille_groupe=sortie_space.Taille_groupe;
-B=sortie_space.B;
 Ntheta=sortie_space.Ntheta;
+B=sortie_space.B;
 P=sortie_space.P;
-sigma=sortie_space.sigma;
 thetaArg=sortie_space.thetaArg;
-azimuth=sortie_space.azimuth;
+freqIndexes=sortie_space.freqIndexes;
+
+
+
+% BOUCLE SUR CHAQUE POSITION for k=0 -> nb_positions
+%Nb_Loca=floor(length(signal)/Taille_de_1_position);
+Nb_Loca=floor(duree_son*fps);
+while (length(signal)/Nb_Loca)< Lframe*2.5
+    fps=fps-1;
+    Nb_Loca=floor(duree_son*fps);
+    fprintf('!!!!!!!!!!! DIMINUTION FPS !!!!!!!!!!\n\n');
+end
+fprintf('!!!!!!!!!!! FPS  vaut  %d !!!!!!!!!!\n\n',fps);
+assignin('base','fps',fps);
+fprintf('Il y aura %d positionnements et autant de localisations\n',Nb_Loca);
+% azimuth a indiquer en degres
+azimuth=linspace(0,360,Nb_Loca);
+D=5*ones(size(azimuth));
+
+Taille_de_1_position=floor(length(signal)/length(D));
+%fenetre:
+N=4; %5 hann par localisation
+%Taille_de_1_position=20000;
+% N=floor(Taille_de_1_position/K); %rect
+%B=Nbfreq;
+%Allocations de memoire
+J1(Ntheta,1)=0;
+x1t{N}=NaN;
+x2t{N}=NaN;
+for i=1:N
+    x1t{i}=zeros(Lframe,1);
+    x2t{i}=zeros(Lframe,1);
+end
+X1{N}=NaN;
+X2{N}=NaN;
+for i=1:4
+    X1{i}=zeros(Lframe,1);
+    X2{i}=zeros(Lframe,1);
+end
+C{B}=NaN;
+for k=1:B
+    C{k}=zeros(2,2);
+end
+Zint{B}=NaN;
+for k=1:B
+    Zint{k}=zeros(2*N,1);
+end
+
+outputSignal=zeros(Taille_de_1_position*length(D),2);
+J(length(D),Ntheta)=0;
+theta_mle=zeros(size(D));
+maxcrit_exp=zeros(size(D));
+disp('Localisation estimee:\n')
+
+hrir = simulator.DirectionalIR(xml.dbGetFile...
+    ('impulse_responses/qu_kemar_anechoic/QU_KEMAR_anechoic_3m.sofa'));
+
+for numero_exp=1:length(D)
+    
+    impulseResponse = hrir.getImpulseResponses(azimuth(numero_exp));
+    %fprintf('%d:%d\n',(numero_exp-1)*Taille_de_1_position+1,numero_exp*Taille_de_1_position)
+    signal_tr=signal((numero_exp-1)*Taille_de_1_position+1:numero_exp*Taille_de_1_position);
+    % application de la hrir aux 2 oreilles
+    left_ear=conv(signal_tr,impulseResponse.left);
+    right_ear=conv(signal_tr,impulseResponse.right);
+    
+    outputSignal((numero_exp-1)*Taille_de_1_position+1:...
+        numero_exp*Taille_de_1_position,:) = ...
+        [left_ear(1:Taille_de_1_position) ...
+        right_ear(1:Taille_de_1_position)];
+end
+%%
+% Ajout de bruit sur le signal d'entree
+Psig=mean(mean(outputSignal,2).^2);
+% if Psig<1
+%     sigma=Psig/10;
+% else
+    sigma=sqrt(Psig/10)/10
+% end
+
+bruit1=randn(size(outputSignal,1),1);
+bruit2=randn(size(outputSignal,1),1);
+
+[b,a]=butter(3,5000/(fs/2),'low');
+bruit1=filter(b,a,bruit1);
+bruit2=filter(b,a,bruit2);
+
+outputSignal=outputSignal+sigma*[bruit1,bruit2];
+%re-scale du outputSignal entre -1 et 1
+outputSignal=rechelonner(outputSignal);
 
 
 x1=outputSignal(:,1);
@@ -161,5 +244,22 @@ end
 % FIN BOUCLE
 
 
-%Jpos=rescale_matrix01(J);
 Jpos=arrangement(J,.15);
+
+
+  sortie_loca.outputSignal=outputSignal;
+  sortie_loca.D=D;
+  sortie_loca.sigma=sigma;
+  sortie_loca.azimuth=azimuth;
+  sortie_loca.Jpos=Jpos;
+  sortie_loca.maxcrit_exp=maxcrit_exp;
+  sortie_loca.theta_mle=theta_mle;
+  sortie_loca.Nb_Loca=Nb_Loca;
+  
+  
+
+
+
+
+  
+ 
